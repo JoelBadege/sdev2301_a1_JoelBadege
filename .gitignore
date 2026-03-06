@@ -1,0 +1,6 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/sdev2301_a1_JoelBadege/.vs/sdev2301_a1_JoelBadege.slnx
+/sdev2301_a1_JoelBadege/sdev2301_a1_JoelBadege/obj
