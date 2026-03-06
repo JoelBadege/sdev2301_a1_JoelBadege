@@ -1,44 +1,48 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using sdev2301_a1_JoelBadege.Models;
+using sdev2301_a1_JoelBadege.Data;
 
-namespace sdev2301_a1_JoelBadgee.Data
+
+namespace sdev2301_a1_JoelBadege.Services
 {
-    public class AppDbContext : DbContext
+    public class StudentService
     {
-        public DbSet<Student> Students { get; set; }
+        private readonly AppDbContext _context;
 
-        public DbSet<Course> Courses { get; set; }
-
-        public DbSet<Enrollment> Enrollments { get; set; }
-
-        public AppDbContext(DbContextOptions<AppDbContext> options)
-            : base(options)
+        public StudentService(AppDbContext context)
         {
+            _context = context;
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        public async Task<int> AddAsync(Student student)
         {
-            base.OnModelCreating(modelBuilder);
+            ArgumentNullException.ThrowIfNull(student);
 
-            
-            modelBuilder.Entity<Enrollment>()
-                .HasKey(e => new { e.StudentId, e.CourseId });
+            if (string.IsNullOrWhiteSpace(student.FullName))
+                throw new ArgumentNullException(nameof(student.FullName), "Full name is required.");
 
-            
-            modelBuilder.Entity<Course>()
-                .HasIndex(c => c.Code)
-                .IsUnique();
+            student.FullName = student.FullName.Trim();
 
-            
-            modelBuilder.Entity<Enrollment>()
-                .HasOne(e => e.Student)
-                .WithMany(s => s.Enrollments)
-                .HasForeignKey(e => e.StudentId);
+            if (student.EnrollmentDate == default)
+                student.EnrollmentDate = DateTime.Today;
 
-            modelBuilder.Entity<Enrollment>()
-                .HasOne(e => e.Course)
-                .WithMany(c => c.Enrollments)
-                .HasForeignKey(e => e.CourseId);
+            _context.Students.Add(student);
+            await _context.SaveChangesAsync();
+
+            return student.Id;
+        }
+
+        public async Task<List<Student>> GetAllAsync()
+        {
+            return await _context.Students
+                .OrderBy(s => s.FullName)
+                .ToListAsync();
+        }
+
+        public async Task<Student?> GetByIdAsync(int id)
+        {
+            return await _context.Students
+                .FirstOrDefaultAsync(s => s.Id == id);
         }
     }
 }
