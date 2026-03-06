@@ -2,9 +2,7 @@
 using sdev2301_a1_JoelBadege.Data;
 using sdev2301_a1_JoelBadege.Models;
 using sdev2301_a1_JoelBadege.Services;
-using sdev2301_a1_YourFullName.Data;
-using sdev2301_a1_YourFullName.Models;
-using sdev2301_a1_YourFullName.Services;
+
 
 var options = new DbContextOptionsBuilder<AppDbContext>()
     .UseSqlite("Data Source=student_enrollment.db")
@@ -12,8 +10,7 @@ var options = new DbContextOptionsBuilder<AppDbContext>()
 
 using var context = new AppDbContext(options);
 
-// Creates the database if it does not exist.
-// This does NOT reset the database.
+
 context.Database.EnsureCreated();
 
 var studentService = new StudentService(context);
